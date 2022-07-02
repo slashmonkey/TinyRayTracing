@@ -1,7 +1,7 @@
 
 #include "Camera.h"
 
-Vec3f Camera::ray_dir(const int& x, const int& y) {
+Vec3f Camera::ray_dir(const float& x, const float& y) {
     float ndc_x = (x + 0.5f) / width;
     float ndc_y = (y + 0.5f) / height;
 

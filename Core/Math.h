@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <random>
 
 const float EPSILON = 1e-5f;
 const float PI = 3.1415926f;
@@ -11,6 +12,16 @@ const float DEG2RAD = PI / 180.0f;
 const float RAD2DEG = 180.0f / PI;
 const double tolerance = 1e-5f;
 const float infinity = std::numeric_limits<float>::max();
+
+inline float random_in_range(float min, float max){
+    static std::random_device rd;
+    static std::mt19937 rng(rd());
+    static std::uniform_real_distribution<float> distribution(min, max);
+    return distribution(rng);
+}
+
+inline int CLAMP(int x, int min, int max) { return (x < min) ? min : ((x > max) ? max : x); }
+inline float CLAMP(float x, float min, float max) { return (x < min) ? min : ((x > max) ? max : x); }
 
 inline bool equal(double a, double b){
     return fabs(a - b) < tolerance;
@@ -434,8 +445,5 @@ typedef Vector3<int> Vec3i;
 typedef Vector3<float> Vec3f;
 typedef Vector4<float> Vec4f;
 typedef Matrix4x4<float> Mat4f;
-
-inline int CLAMP(int x, int min, int max) { return (x < min) ? min : ((x > max) ? max : x); }
-inline float CLAMP(float x, float min, float max) { return (x < min) ? min : ((x > max) ? max : x); }
 
 #endif

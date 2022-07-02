@@ -8,15 +8,10 @@ struct Color{
 public:
     Color() : r(0), g(0), b(0) {};
 
-    explicit Color(const Vec3f& v3f) {
-        r = CLAMP(v3f.x, 0.f ,255.f);
-        g = CLAMP(v3f.y, 0.f ,255.f);
-        b = CLAMP(v3f.z, 0.f ,255.f);
-    }
     Color(float _r, float _g, float _b) {
-        r = CLAMP(_r, 0.f, 255.f);
-        g = CLAMP(_g, 0.f, 255.f);
-        b = CLAMP(_b, 0.f, 255.f);
+        r = _r;
+        g = _g;
+        b = _b;
     };
 
     Color(const Color& c){
@@ -34,6 +29,12 @@ public:
     Color operator* (Color color) const { return Color(this->R() * color.R(), this->G() * color.G(), this->B() * color.B()); }
     Color operator+ (const Color& color) const {
         return Color(this->R() + color.R(), this->G() + color.G(), this->B() + color.B());
+    }
+
+    Color clamp(){
+        if (r > 255.f) r = 255.f;
+        if (g > 255.f) g = 255.f;
+        if (b > 255.f) b = 255.f;
     }
 
     Color lerp(const Color& c, float weight) const{

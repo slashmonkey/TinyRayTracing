@@ -21,8 +21,14 @@ void RayTracer::render(const Scene& scene) {
 
     for (int i = 0; i < window_height; ++i) {
         for (int j = 0; j < window_width; ++j) {
-            Ray ray(camera->origin(), camera->ray_dir(j, i));
-            Color color = cast_ray(ray.origin(), ray.direction(), scene, 0);
+            Color color;
+            for (int k = 0; k < samples_per_pixel; ++k) {
+                Ray ray(camera->origin(), camera->ray_dir(j + random_in_range(0.f, 1.f), i + random_in_range(0.f, 1.f)));
+                color = color + cast_ray(ray.origin(), ray.direction(), scene, 0);
+            }
+            float scale = 1.f / samples_per_pixel;
+            color = color * scale;
+            color.clamp();
             draw_pixel(j, i, color);
         }
     }
@@ -38,7 +44,7 @@ Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scen
     if (trace(orig, dir, scene, hitRecord)){
         float scale = 4;
         float pattern = (fmodf(hitRecord.tex_coord.x * scale, 1) > 0.5) ^ (fmodf(hitRecord.tex_coord.y * scale, 1) > 0.5);
-        hit_color = Red.lerp(Red * 0.8f, pattern) * std::max(0.f, hitRecord.normal*(-1 * dir));
+        hit_color = Blue.lerp(White * 0.8f, pattern) * std::max(0.f, hitRecord.normal*(-1 * dir));
     }
     return hit_color;
 }

@@ -43,6 +43,7 @@ private:
     const unsigned int channel;
     unsigned char* image;
     std::unique_ptr<Camera> camera;
+    const int samples_per_pixel = 16;
 
     void draw_pixel(unsigned int x, unsigned int y, const Color& color);
 };
