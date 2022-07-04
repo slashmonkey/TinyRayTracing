@@ -31,7 +31,7 @@ public:
         return Color(this->R() + color.R(), this->G() + color.G(), this->B() + color.B());
     }
 
-    Color clamp(){
+    void clamp(){
         if (r > 255.f) r = 255.f;
         if (g > 255.f) g = 255.f;
         if (b > 255.f) b = 255.f;

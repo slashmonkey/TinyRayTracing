@@ -446,4 +446,12 @@ typedef Vector3<float> Vec3f;
 typedef Vector4<float> Vec4f;
 typedef Matrix4x4<float> Mat4f;
 
+inline Vec3f random_in_unit_sphere(){
+    while (true) {
+        auto p = Vec3f(random_in_range(-1.f , 1.f), random_in_range(-1.f , 1.f), random_in_range(-1.f , 1.f));
+        if (p.norm() >= 1) continue;
+        return p;
+    }
+}
+
 #endif

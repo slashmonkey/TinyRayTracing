@@ -35,16 +35,13 @@ void RayTracer::render(const Scene& scene) {
 }
 
 Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scene, int depth) {
-    if (depth > scene.max_depth) {
-        return Black;
-    }
+    if (depth > scene.max_depth) return Black;
 
     Color hit_color = scene.background_color;
     HitRecord hitRecord;
     if (trace(orig, dir, scene, hitRecord)){
-        float scale = 4;
-        float pattern = (fmodf(hitRecord.tex_coord.x * scale, 1) > 0.5) ^ (fmodf(hitRecord.tex_coord.y * scale, 1) > 0.5);
-        hit_color = Blue.lerp(White * 0.8f, pattern) * std::max(0.f, hitRecord.normal*(-1 * dir));
+        Vec3f target = hitRecord.pos + hitRecord.normal + random_in_unit_sphere();
+        return Color((hitRecord.normal.x + 1) * 0.5 * 255, (hitRecord.normal.y + 1) * 0.5 * 255, (hitRecord.normal.z + 1) * 0.5 * 255);
     }
     return hit_color;
 }
