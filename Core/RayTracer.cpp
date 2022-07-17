@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Ray.h"
 #include "Scene.h"
+#include "Math.h"
 
 void RayTracer::draw_pixel(unsigned int x, unsigned int y, const Color& color) {
     if (x < 0 || x >= window_width || y < 0 || y > window_width) return;
@@ -40,8 +41,55 @@ Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scen
     Color hit_color = scene.background_color;
     HitRecord hitRecord;
     if (trace(orig, dir, scene, hitRecord)){
-        Vec3f target = hitRecord.pos + hitRecord.normal + random_in_unit_sphere();
-        return Color((hitRecord.normal.x + 1) * 0.5 * 255, (hitRecord.normal.y + 1) * 0.5 * 255, (hitRecord.normal.z + 1) * 0.5 * 255);
+        switch (hitRecord.material->material_type) {
+            case DIFFUSE_AND_GLOSSY:
+            {
+                std::shared_ptr<Lambertian> lambertian = std::dynamic_pointer_cast<Lambertian>(hitRecord.material);
+
+                float diffuse_intensity = 0.f;
+                float specular_intensity = 0.f;
+
+                Vec3f hit_point = hitRecord.pos;
+                Vec3f shadow_point_orig = dir.dot(hitRecord.normal) < 0.f ?
+                                           hit_point + hitRecord.normal * EPSILON :
+                                           hit_point - hitRecord.normal * EPSILON;
+
+                for (auto& light: scene.get_lights()) {
+                    Vec3f dir_hit_light = (light->position - hitRecord.pos);
+                    float r2 = dir_hit_light.dot(dir_hit_light);
+                    dir_hit_light.normalize();
+                    float light_dot_normal = std::max(0.f, dir_hit_light.dot(hitRecord.normal));
+
+                    Vec3f h = (dir_hit_light - dir).normalize();
+                    specular_intensity += light->intensity * std::powf(  std::max(0.f, h.dot(hitRecord.normal)), lambertian->specular_exp );
+
+                    HitRecord shadow_ray_hitRecord;
+                    if(trace(shadow_point_orig, dir_hit_light, scene, shadow_ray_hitRecord)){
+                        if ( (shadow_point_orig - shadow_ray_hitRecord.pos).norm() < dir_hit_light.norm()){
+                            continue;
+                        }
+                    }
+
+                    diffuse_intensity += light->intensity * std::max(0.f, light_dot_normal);
+                }
+
+                Color diffuse_color = lambertian->diffuse_color * diffuse_intensity;
+                Color specular_color = lambertian->diffuse_color * specular_intensity * lambertian->Ks;
+
+                hit_color = diffuse_color + specular_color;
+                break;
+            }
+            case REFLECTION:
+            {
+
+            }
+                break;
+            case REFLECTION_AND_REFRACTION:
+            {
+
+            }
+                break;
+        }
     }
     return hit_color;
 }

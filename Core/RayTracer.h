@@ -38,8 +38,8 @@ public:
     int get_height() const { return window_height; }
 
 private:
-    const int window_width = 1024;
-    const int window_height = 768;
+    const int window_width = 1280;
+    const int window_height = 960;
     const unsigned int channel;
     unsigned char* image;
     std::unique_ptr<Camera> camera;
