@@ -96,6 +96,7 @@ Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scen
 
 bool RayTracer::trace(const Vec3f& orig, const Vec3f& dir, const Scene& scene, HitRecord& hit_record) {
     float t_near = infinity;
+    bool hit = false;
     for (const auto& obj: scene.get_objects()) {
         if (obj->intersect(orig, dir, t_near)){
             Vec3f pos = orig + dir * t_near;
@@ -107,8 +108,8 @@ bool RayTracer::trace(const Vec3f& orig, const Vec3f& dir, const Scene& scene, H
             hit_record.tex_coord = tex;
             hit_record.t_near = t_near;
             hit_record.material = obj->material;
-            return true;
+            hit = true;
         }
     }
-    return false;
+    return hit;
 }
