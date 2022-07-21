@@ -36,7 +36,7 @@ void RayTracer::render(const Scene& scene) {
 }
 
 Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scene, int depth) {
-    if (depth > scene.max_depth) return Black;
+    if (depth > scene.max_depth) return scene.background_color;
 
     Color hit_color = scene.background_color;
     HitRecord hitRecord;
@@ -73,22 +73,61 @@ Color RayTracer::cast_ray(const Vec3f& orig, const Vec3f& dir, const Scene& scen
                     diffuse_intensity += light->intensity * std::max(0.f, light_dot_normal);
                 }
 
-                Color diffuse_color = lambertian->diffuse_color * diffuse_intensity;
-                Color specular_color = lambertian->diffuse_color * specular_intensity * lambertian->Ks;
+                Color diffuse_color = lambertian->diffuse_color * diffuse_intensity * lambertian->Kd;
+                Color specular_color = White * specular_intensity * lambertian->Ks;
 
                 hit_color = diffuse_color + specular_color;
                 break;
             }
+
             case REFLECTION:
             {
+                std::shared_ptr<Reflection> reflection = std::dynamic_pointer_cast<Reflection>(hitRecord.material);
 
-            }
+                float kr;
+                fresnel(dir, hitRecord.normal, reflection->ior, kr);
+                Vec3f hit_point = hitRecord.pos;
+                Vec3f reflect_dir = reflect(dir, hitRecord.normal);
+                Vec3f reflect_orig = reflect_dir.dot(hitRecord.normal) < 0 ? hit_point + hitRecord.normal * EPSILON : hit_point - hitRecord.normal * EPSILON;
+
+                hit_color = cast_ray(reflect_orig, reflect_dir, scene, depth + 1) * kr;
                 break;
+            }
+
             case REFLECTION_AND_REFRACTION:
             {
+                std::shared_ptr<ReflectionRefraction> refraction = std::dynamic_pointer_cast<ReflectionRefraction>(hitRecord.material);
 
-            }
+                Vec3f hit_point = hitRecord.pos;
+                Vec3f reflectionDirection = reflect(dir, hitRecord.normal).normalize();
+                Vec3f refractionDirection = refract(dir, hitRecord.normal, refraction->ior).normalize();
+                Vec3f reflectionRayOrig = (reflectionDirection.dot( hitRecord.normal)) < 0.f ?
+                                          hit_point - hitRecord.normal * EPSILON :
+                                          hit_point + hitRecord.normal * EPSILON;
+                Vec3f refractionRayOrig = (refractionDirection.dot( hitRecord.normal) < 0) ?
+                                          hit_point - hitRecord.normal * EPSILON :
+                                          hit_point + hitRecord.normal * EPSILON;
+                Color reflectionColor = cast_ray(reflectionRayOrig, reflectionDirection, scene, depth + 1);
+                Color refractionColor = cast_ray(refractionRayOrig, refractionDirection, scene, depth + 1);
+                float kr;
+                fresnel(dir,  hitRecord.normal, refraction->ior, kr);
+
+                float specular_intensity = 0.f;
+                for (auto& light: scene.get_lights()) {
+                    Vec3f dir_hit_light = (light->position - hitRecord.pos);
+                    float r2 = dir_hit_light.dot(dir_hit_light);
+                    dir_hit_light.normalize();
+                    float light_dot_normal = std::max(0.f, dir_hit_light.dot(hitRecord.normal));
+
+                    Vec3f h = (dir_hit_light - dir).normalize();
+                    specular_intensity += light->intensity * std::powf(  std::max(0.f, h.dot(hitRecord.normal)), refraction->specular_exp );
+                }
+                Color specular_color = White * specular_intensity * refraction->Ks;
+
+                hit_color = specular_color + reflectionColor * kr + refractionColor * (1 - kr);
+
                 break;
+            }
         }
     }
     return hit_color;

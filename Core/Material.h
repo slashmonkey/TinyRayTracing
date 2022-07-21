@@ -18,7 +18,6 @@ public:
     MaterialType material_type;
 };
 
-//DIFFUSE_AND_GLOSSY
 class Lambertian : public Material{
 public:
     Lambertian(const Color& color) : diffuse_color(color){
@@ -28,6 +27,20 @@ public:
     float Kd = 0.8f, Ks = 0.2f;
     Color diffuse_color;
     float specular_exp = 25;
+};
+
+class Reflection : public Material{
+public:
+    Reflection() { material_type = REFLECTION; }
+    float ior = 1.5;   //refractive index
+};
+
+class ReflectionRefraction : public Material{
+public:
+    ReflectionRefraction() { material_type = REFLECTION_AND_REFRACTION; }
+    float ior = 1.5;   //refractive index
+    float specular_exp = 25;
+    float Ks = 0.4f;
 };
 
 
