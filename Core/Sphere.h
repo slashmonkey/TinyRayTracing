@@ -10,7 +10,7 @@ public:
         radius2 = radius * radius;
     }
 
-    bool intersect(const Vec3f& orig, const Vec3f& dir, float& t_near) const override{
+    bool intersect(const Vec3f& orig, const Vec3f& dir, float& t_near, uint32_t& index , Vec2f& bary_uv) const override{
         // analytic solution
         Vec3f L = orig - center;
         float a = dir * dir;
@@ -28,7 +28,7 @@ public:
         return true;
     }
 
-    void get_surface_data(const Vec3f& hit_pos, Vec3f& hit_normal, Vec2f& tex) const override {
+    void get_surface_data(const Vec3f& hit_pos, Vec3f& hit_normal, Vec2f& tex, const uint32_t& index , const Vec2f& bary_uv, Vec2f& st) const override {
         hit_normal = (hit_pos - center).normalize();
         tex.x = (1 + atan2(hit_normal.z, hit_normal.x) / PI) * 0.5f;
         tex.y = acosf(hit_normal.y) / PI;

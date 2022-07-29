@@ -15,9 +15,12 @@ class Material;
 struct HitRecord{
     float t_near;
     Vec2f tex_coord;
+    Vec2f bary_uv;
+    Vec2f bary_st;
     Vec3f pos;
     Vec3f normal;
     std::shared_ptr<Material> material;
+    std::shared_ptr<Object> object;
 };
 
 class RayTracer {

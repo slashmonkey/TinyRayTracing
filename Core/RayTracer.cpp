@@ -137,15 +137,20 @@ bool RayTracer::trace(const Vec3f& orig, const Vec3f& dir, const Scene& scene, H
     float t_near = infinity;
     bool hit = false;
     for (const auto& obj: scene.get_objects()) {
-        if (obj->intersect(orig, dir, t_near)){
+        Vec2f bary_uv;
+        uint32_t index;
+        if (obj->intersect(orig, dir, t_near, index, bary_uv)){
             Vec3f pos = orig + dir * t_near;
             Vec3f normal;
             Vec2f tex;
-            obj->get_surface_data(pos, normal, tex);
+            Vec2f st;
+            obj->get_surface_data(pos, normal, tex, index, bary_uv, st);
             hit_record.pos = pos;
             hit_record.normal = normal;
             hit_record.tex_coord = tex;
             hit_record.t_near = t_near;
+            hit_record.bary_uv = bary_uv;
+            hit_record.bary_st = st;
             hit_record.material = obj->material;
             hit = true;
         }
