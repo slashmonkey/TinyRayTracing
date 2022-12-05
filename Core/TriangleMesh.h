@@ -3,6 +3,37 @@
 #define RAYTRACER_TRIANGLEMESH_H
 
 #include "Object.h"
+#include "Intersection.h"
+#include "Bound.h"
+#include "Material.h"
+
+class Triangle : public Object{
+public:
+    Vec3f v0, v1, v2;
+    Vec3f e1, e2;
+    Vec3f normal;
+
+    Triangle(Vec3f _v0, Vec3f _v1, Vec3f _v2){
+        e1 = v1 - v0;
+        e2 = v2 - v0;
+        normal = e1.cross(e2).normalize();
+    }
+
+    bool intersect(const Vec3f& orig, const Vec3f& dir, float& t_near, uint32_t& index, Vec2f& bary_uv) const override {
+        return false;
+    }
+
+    void get_surface_data(const Vec3f& hit_pos, Vec3f& hit_normal, Vec2f& tex, const uint32_t& index, const Vec2f& bary_uv,
+                     Vec2f& st) const override { }
+
+    Intersection get_intersection(Ray ray) override {
+        return Intersection();
+    }
+
+    Bound get_bound() const override { return union_bounds(Bound(v0, v1), v2); }
+
+    ~Triangle() override = default;
+};
 
 class TriangleMesh : public Object{
 public:
@@ -91,10 +122,17 @@ public:
         return intersect;
     }
 
+    Bound get_bound() const override { return bound; };
+
+    Intersection get_intersection(Ray ray) override{
+        Intersection intersection;
+        return intersection;
+    }
+
     ~TriangleMesh() = default;
 
 private:
-    
+    Bound bound;
 };
 
 
