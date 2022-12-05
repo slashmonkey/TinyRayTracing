@@ -110,6 +110,16 @@ template <typename T> struct Vector3{
         return Vector3<T>(m1, m2, m3);
     }
 
+    static Vector3<T> Min(const Vector3<T>& p1, const Vector3<T>& p2) {
+        return Vector3<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y),
+                        std::min(p1.z, p2.z));
+    }
+
+    static Vector3<T> Max(const Vector3<T>& p1, const Vector3<T>& p2) {
+        return Vector3<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y),
+                        std::max(p1.z, p2.z));
+    }
+
     Vector3<T> operator +(const Vector3& v) const { return Vector3<T>(x + v.x, y + v.y, z + v.z);}
     Vector3<T> operator -(const Vector3& v) const { return Vector3<T>(x - v.x, y - v.y, z - v.z);}
 //    Vector3<T> operator *(const Vector3& v) const { return Vector3<T>(x * v.x, y * v.y, z * v.z);}
