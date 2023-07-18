@@ -9,30 +9,25 @@
 #include "Intersection.h"
 
 struct BVHNode{
-    Bound bounds;
-    BVHNode* left;
-    BVHNode* right;
-    Object* object;
-
-    BVHNode(){
-        bounds = Bound();
-        left = right = nullptr;
-        object = nullptr;
-    }
+    Bound bounds {};
+    BVHNode* left = nullptr;
+    BVHNode* right = nullptr;
+    Object* object = nullptr;
 };
 
 class BVH {
 public:
-    BVH(std::vector<Object*> objs):objects(std::move(objs)){
-        if (objs.empty()) return;
-        root = recursive_build(objects);
+    explicit BVH(std::vector<Object*> objects): objectsInScene(std::move(objects)){
+        root = recursive_build(objectsInScene);
     }
 
     BVHNode* root;
     BVHNode* recursive_build(std::vector<Object*> objects);
     Intersection intersect(const Ray &ray) const;
     Intersection get_intersection(BVHNode* node, const Ray& ray)const;
-    std::vector<Object*> objects;
+
+private:
+    std::vector<Object*> objectsInScene;
 };
 
 

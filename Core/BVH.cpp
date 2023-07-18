@@ -1,25 +1,27 @@
 
 #include "BVH.h"
 
-BVHNode* BVH::recursive_build(std::vector<Object*> objs) {
+BVHNode* BVH::recursive_build(std::vector<Object*> objects) {
     BVHNode* node = new BVHNode();
     Bound bound;
-    for (int i = 0; i < objs.size(); ++i) {
-        bound = union_bounds(bound, objs[i]->get_bound());
+    for (int i = 0; i < objects.size(); ++i) {
+        bound = union_bounds(bound, objects[i]->get_bound());
     }
-    if (objs.size() == 1){
-        node->object = objs[0];
-        node->bounds = objs[0]->get_bound();
+    if (objects.size() == 1){
+        node->object = objects[0];
+        node->bounds = objects[0]->get_bound();
         node->left = nullptr;
         node->right = nullptr;
         return node;
-    }else if(objects.size() == 2){
+    }else if (objects.size() == 2){
         node->left = recursive_build(std::vector<Object*> {objects[0]});
         node->right = recursive_build(std::vector<Object*> {objects[1]});
-    }else{
+        node->bounds = union_bounds(node->left->bounds, node->right->bounds);
+        return node;
+    }else {
         Bound centroidBounds;
-        for (int i = 0; i < objs.size(); ++i) {
-            centroidBounds = union_bounds(centroidBounds, objs[i]->get_bound());
+        for (auto& object : objects) {
+            centroidBounds = union_bounds(centroidBounds, object->get_bound());
         }
         int axis = centroidBounds.max_extent();
         switch (axis) {
@@ -40,9 +42,9 @@ BVHNode* BVH::recursive_build(std::vector<Object*> objs) {
                 break;
         }
 
-        auto begin = objs.begin();
-        auto middle = objs.begin() + (objs.size() / 2);
-        auto end = objs.end();
+        auto begin = objects.begin();
+        auto middle = objects.begin() + (objects.size() / 2);
+        auto end = objects.end();
 
         auto leftObjects = std::vector<Object*>(begin, middle);
         auto rightObjects = std::vector<Object*>(middle, end);
@@ -54,8 +56,6 @@ BVHNode* BVH::recursive_build(std::vector<Object*> objs) {
 
         return node;
     }
-
-    return nullptr;
 }
 
 Intersection BVH::intersect(const Ray& ray) const {

@@ -11,12 +11,11 @@
 #define CHANNEL_NUM 3
 
 int main() {
-    Scene scene;
-    std::unique_ptr<Object> sphere1 = std::make_unique<Sphere>(2.f, Vec3f(-2, -0.5f, -8));
-    std::unique_ptr<Object> sphere2 = std::make_unique<Sphere>(2.f, Vec3f(2.5f, -1.0f, -12));
-    std::unique_ptr<Object> sphere3 = std::make_unique<Sphere>(1.f, Vec3f(2.f, -2, -6));
-    std::unique_ptr<Object> sphere4 = std::make_unique<Sphere>(0.5f, Vec3f(-0.5f, -2.5f, -5.5));
-    std::unique_ptr<Object> sphere5 = std::make_unique<Sphere>(1.f, Vec3f(0.2f, 1.3f, -5));
+    Object* sphere1 = new Sphere(2.f, Vec3f(-2, -0.5f, -8));
+    Object* sphere2 = new Sphere(2.f, Vec3f(2.5f, -1.0f, -12));
+    Object* sphere3 = new Sphere(1.f, Vec3f(2.f, -2, -6));
+	Object* sphere4 = new Sphere(0.5f,Vec3f(-0.5f, -2.5f, -5.5));
+	Object* sphere5 = new Sphere(1.f, Vec3f(0.2f, 1.3f, -5));
 
     std::shared_ptr<Material> lambertian1 = std::make_shared<Lambertian>(Red);
     std::shared_ptr<Material> lambertian2 = std::make_shared<Lambertian>(Green);
@@ -30,23 +29,25 @@ int main() {
     sphere4->set_material(reflection);
     sphere5->set_material(reflection);
 
-    scene.add(std::move(sphere1));
-    scene.add(std::move(sphere2));
-    scene.add(std::move(sphere3));
-    scene.add(std::move(sphere4));
-    scene.add(std::move(sphere5));
+    Scene scene;
+    scene.add(sphere1);
+    scene.add(sphere2);
+    scene.add(sphere3);
+    scene.add(sphere4);
+    scene.add(sphere5);
 
-    Vec3f verts[4] = {{-6,-3,-4}, {6,-3,-4}, {6,-3,-16}, {-6,-3,-16}};
+    Vec3f verts[4] = {{-6,0,0}, {6,-10,-4}, {12,-3,-16}, {-6, -6,-16}};
     uint32_t vertIndex[6] = {0, 1, 3, 1, 2, 3};
     Vec2f st[4] = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
-    std::unique_ptr<Object> mesh = std::make_unique<TriangleMesh>(verts, vertIndex, 2, st);
-    mesh->set_material(lambertian4);
-    scene.add(std::move(mesh));
+    Object* mesh = new TriangleMesh(verts, vertIndex, 2, st, lambertian4);
+    scene.add(mesh);
 
     std::unique_ptr<Light> light1 = std::make_unique<Light>(Vec3f(-10, 12, -20), 0.5f);
     std::unique_ptr<Light> light2 = std::make_unique<Light>(Vec3f(20, 20, 0), 0.5f);
     scene.add(std::move(light1));
     scene.add(std::move(light2));
+
+    scene.buildBVH();
 
     RayTracer tracer(CHANNEL_NUM);
     tracer.render(scene);

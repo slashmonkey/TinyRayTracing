@@ -1,7 +1,7 @@
 
 #include "Camera.h"
 
-Vec3f Camera::ray_dir(const float& x, const float& y) {
+Vec3f Camera::ray_dir(const float& x, const float& y) const {
     float ndc_x = (x + 0.5f) / width;
     float ndc_y = (y + 0.5f) / height;
 
@@ -11,7 +11,7 @@ Vec3f Camera::ray_dir(const float& x, const float& y) {
     float camera_x = screen_x * ratio * tan_fov;
     float camera_y = screen_y * tan_fov;
 
-    return Vec3f(camera_x, camera_y, -1.f);
+    return Vec3f {camera_x, camera_y, -1.f};
 }
 
 void Camera::update() {

@@ -36,8 +36,8 @@ public:
     }
 
     Bound get_bound() const override{
-        return Bound(Vec3f (center.x - radius, center.y-radius, center.z-radius),
-                       Vec3f (center.x+radius, center.y+radius, center.z+radius));
+        return Bound(Vec3f (center.x - radius, center.y - radius, center.z - radius),
+                       Vec3f (center.x + radius, center.y + radius, center.z + radius));
     }
 
     Intersection get_intersection(Ray ray) override{
@@ -51,8 +51,8 @@ public:
         if (!solve_quadratic(a, b, c, t0, t1)) return intersection;
         if (t0 < 0) t0 = t1;
         if (t0 < 0) return intersection;
-        intersection.hit = true;
 
+        intersection.hit = true;
         intersection.coords = Vec3f(ray.origin() + ray.direction() * t0);
         intersection.normal = (Vec3f (intersection.coords - center)).normalize();
         intersection.material = this->material;
