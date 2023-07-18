@@ -19,8 +19,8 @@ struct HitRecord{
     Vec2f bary_st;
     Vec3f pos;
     Vec3f normal;
-    std::shared_ptr<Material> material;
-    std::shared_ptr<Object> object;
+    std::shared_ptr<Material> material {};
+    Object* object {};
 };
 
 class RayTracer {

@@ -15,7 +15,7 @@ class Material {
 public:
     Material() = default;
     virtual ~Material() = 0;
-    MaterialType material_type;
+    MaterialType material_type {};
 };
 
 class Lambertian : public Material{
@@ -23,7 +23,7 @@ public:
     Lambertian(const Color& color) : diffuse_color(color){
         material_type = DIFFUSE_AND_GLOSSY;
     }
-    ~Lambertian() override = default;
+
     float Kd = 0.8f, Ks = 0.2f;
     Color diffuse_color;
     float specular_exp = 25;

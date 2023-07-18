@@ -8,21 +8,12 @@
 class Object;
 
 struct Intersection {
-    Intersection(){
-        hit = false;
-        coords = Vec3f ();
-        normal = Vec3f ();
-        distance = std::numeric_limits<double>::max();
-        obj = nullptr;
-        material = nullptr;
-    }
-
-    bool hit;
-    Vec3f coords;
-    Vec3f normal;
-    double distance;
-    Object* obj;
-    std::shared_ptr<Material> material;
+    bool hit = false;
+    double distance = std::numeric_limits<double>::max();
+    Vec3f coords{};
+    Vec3f normal{};
+    Object* obj{};
+    std::shared_ptr<Material> material{};
 };
 
 #endif //RAYTRACER_INTERSECTION_H

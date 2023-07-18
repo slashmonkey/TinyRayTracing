@@ -12,7 +12,7 @@ public:
         update();
     }
 
-    Vec3f ray_dir(const float& x, const float& y);
+    Vec3f ray_dir(const float& x, const float& y) const;
     Vec3f origin() { return orig; }
 
     void update();
