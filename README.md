@@ -2,7 +2,6 @@
 A tiny Raytracing 
 
 # Dependencies
-* [SDL2](https://www.libsdl.org/)
 * [stb_image](https://github.com/nothings/stb)
 
 ## Main Feature
